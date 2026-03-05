@@ -1,11 +1,10 @@
 let allGames = [];
 
-// Your Vercel backend URL
-const backendUrl = "https://game-scraping-backend-fm64.vercel.app";
+// 🔴 IMPORTANT: Update this with your actual Vercel backend URL
+const backendUrl = "https://game-scraping-backend-omega.vercel.app";
 
 // Load games on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Test backend connection first
     testBackendConnection();
 });
 
@@ -131,22 +130,6 @@ function fetchResults() {
         });
 }
 
-// Add this function to show errors
-function showError(message) {
-    const container = document.getElementById('gamesContainer');
-    container.innerHTML = `
-        <div style="text-align: center; padding: 2rem; background: #fee; border-radius: 8px;">
-            <p style="color: #c33;">❌ ${escapeHtml(message)}</p>
-            <button onclick="testBackendConnection()" style="margin-top: 1rem; padding: 0.5rem 1rem;">
-                Retry Connection
-            </button>
-        </div>
-    `;
-    container.style.display = 'block';
-    hideLoading();
-}
-
-// Rest of your functions remain the same...
 function displayGames(games) {
     const container = document.getElementById('gamesContainer');
     const noResults = document.getElementById('noResults');
@@ -265,6 +248,20 @@ function showLoading(message) {
 function hideLoading() {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('gamesContainer').style.display = 'grid';
+}
+
+function showError(message) {
+    const container = document.getElementById('gamesContainer');
+    container.innerHTML = `
+        <div style="text-align: center; padding: 2rem; background: #fee; border-radius: 8px;">
+            <p style="color: #c33;">❌ ${escapeHtml(message)}</p>
+            <button onclick="testBackendConnection()" style="margin-top: 1rem; padding: 0.5rem 1rem;">
+                Retry Connection
+            </button>
+        </div>
+    `;
+    container.style.display = 'block';
+    hideLoading();
 }
 
 function escapeHtml(unsafe) {
