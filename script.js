@@ -1,7 +1,7 @@
 let allGames = [];
 
 // Your Vercel backend URL
-const backendUrl = "https://game-scraping-backend-kappa.vercel.app";
+const backendUrl = "https://game-scraping-backend-9hfkosixn-miguelwalters-projects.vercel.app";
 
 // Load games on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -18,7 +18,6 @@ function loadGames() {
         })
         .catch(error => {
             console.error('Error loading games:', error);
-            alert('Failed to load games. Please check your backend.');
         });
 }
 
@@ -39,10 +38,7 @@ function searchGame() {
         },
         body: JSON.stringify({ game_name: gameName })
     })
-    .then(response => {
-        if (!response.ok) throw new Error("Backend response not OK");
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
         showLoading(`✅ Found results! Loading articles about "${gameName}"...`);
         // Check for new data after search
@@ -51,16 +47,13 @@ function searchGame() {
     .catch(error => {
         console.error('Error searching:', error);
         hideLoading();
-        alert('Failed to search. Please check your backend or try again.');
+        alert('Failed to search. Please try again.');
     });
 }
 
 function checkForResults() {
     fetch(`${backendUrl}/api/games`)
-        .then(response => {
-            if (!response.ok) throw new Error("Backend response not OK");
-            return response.json();
-        })
+        .then(response => response.json())
         .then(games => {
             allGames = games;
             displayGames(games);
@@ -70,11 +63,6 @@ function checkForResults() {
             if (games.length === 0) {
                 document.getElementById('noResults').style.display = 'block';
             }
-        })
-        .catch(error => {
-            console.error('Error fetching results:', error);
-            hideLoading();
-            alert('Failed to get results. Please check your backend.');
         });
 }
 
@@ -92,7 +80,6 @@ function displayGames(games) {
     
     let html = '';
     games.forEach(game => {
-        // Article type badge color
         let badgeColor = '#667eea';
         if (game.article_type === 'Review') badgeColor = '#48bb78';
         if (game.article_type === 'News') badgeColor = '#4299e1';
