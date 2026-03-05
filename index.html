@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GamesRadar Game Search</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>🎮 GamesRadar Game Search</h1>
+            <p>Search for any game to find reviews and articles from GamesRadar</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-section">
+            <h2>🔍 Search for a Game</h2>
+            <div class="game-search-container">
+                <input type="text" 
+                       id="gameNameInput" 
+                       placeholder="Enter game name (e.g., Elden Ring, Baldur's Gate 3, Spider-Man)"
+                       value="Elden Ring">
+                <button onclick="searchGame()" class="search-game-btn">🔍 Search GamesRadar</button>
+            </div>
+            <p class="example-text">Try: Elden Ring, Baldur's Gate 3, Spider-Man 2, Final Fantasy, Zelda</p>
+        </div>
+
+        <div class="controls">
+            <div class="filter-container">
+                <input type="text" id="searchInput" placeholder="Filter current results...">
+                <button onclick="filterGames()">🔍 Filter</button>
+            </div>
+            <button onclick="clearFilter()" class="refresh-btn">🔄 Clear Filter</button>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <span id="gameCount">Ready to search...</span>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p id="loadingMessage">Searching GamesRadar...</p>
+        </div>
+
+        <div id="gamesContainer" class="games-grid"></div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>No results found</p>
+            <p class="hint">Try searching for a different game name</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 GamesRadar Game Search | Searches real GamesRadar articles</p>
+        <p class="disclaimer">This is a demonstration project - searches and displays at least 10 results</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
