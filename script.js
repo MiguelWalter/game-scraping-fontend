@@ -1,7 +1,7 @@
 let allGames = [];
 
-// Your Vercel backend URL
-const backendUrl = "https://game-scraping-backend-9hfkosixn-miguelwalters-projects.vercel.app";
+// Updated Vercel backend URL
+const backendUrl = "https://game-scraping-backend-fm64.vercel.app";
 
 // Load games on page load
 document.addEventListener('DOMContentLoaded', function() {
@@ -10,7 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function loadGames() {
     fetch(`${backendUrl}/api/games`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
         .then(games => {
             allGames = games;
             displayGames(games);
@@ -18,6 +21,7 @@ function loadGames() {
         })
         .catch(error => {
             console.error('Error loading games:', error);
+            alert('Failed to load games. Please check your backend.');
         });
 }
 
@@ -38,10 +42,11 @@ function searchGame() {
         },
         body: JSON.stringify({ game_name: gameName })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error('Search request failed');
+        return response.json();
+    })
     .then(data => {
-        showLoading(`✅ Found results! Loading articles about "${gameName}"...`);
-        // Check for new data after search
         setTimeout(checkForResults, 3000);
     })
     .catch(error => {
@@ -53,7 +58,10 @@ function searchGame() {
 
 function checkForResults() {
     fetch(`${backendUrl}/api/games`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to fetch updated games');
+            return response.json();
+        })
         .then(games => {
             allGames = games;
             displayGames(games);
@@ -63,6 +71,11 @@ function checkForResults() {
             if (games.length === 0) {
                 document.getElementById('noResults').style.display = 'block';
             }
+        })
+        .catch(error => {
+            console.error('Error fetching results:', error);
+            hideLoading();
+            alert('Failed to update search results.');
         });
 }
 
@@ -98,34 +111,18 @@ function displayGames(games) {
                 ${game.article_url && game.article_url !== '#' ? 
                     `<div class="article-link">
                         <a href="${escapeHtml(game.article_url)}" target="_blank">
-                            <span>🔗</span> Read on GamesRadar
+                            🔗 Read on GamesRadar
                         </a>
                     </div>` : ''}
                 
-                <div class="game-info">
-                    <strong>Published:</strong> ${escapeHtml(game.release_date)}
+                <div class="game-info"><strong>Published:</strong> ${escapeHtml(game.release_date)}</div>
+                <div class="game-info"><strong>Platforms:</strong>
+                    <ul>${game.platform_availability.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul>
                 </div>
-                
-                <div class="game-info">
-                    <strong>Platforms:</strong>
-                    <ul>
-                        ${game.platform_availability.map(p => `<li>${escapeHtml(p)}</li>`).join('')}
-                    </ul>
-                </div>
-                
-                <div class="game-info">
-                    <strong>Developer:</strong> ${escapeHtml(game.developer_info)}
-                </div>
-                
-                <div class="game-info">
-                    <strong>Publisher:</strong> ${escapeHtml(game.publisher_info)}
-                </div>
-                
-                <div class="game-info">
-                    <strong>Highlights:</strong>
-                    <ul>
-                        ${game.key_features.map(f => `<li>${escapeHtml(f)}</li>`).join('')}
-                    </ul>
+                <div class="game-info"><strong>Developer:</strong> ${escapeHtml(game.developer_info)}</div>
+                <div class="game-info"><strong>Publisher:</strong> ${escapeHtml(game.publisher_info)}</div>
+                <div class="game-info"><strong>Highlights:</strong>
+                    <ul>${game.key_features.map(f => `<li>${escapeHtml(f)}</li>`).join('')}</ul>
                 </div>
             </div>
         `;
@@ -137,13 +134,13 @@ function displayGames(games) {
 function filterGames() {
     const query = document.getElementById('searchInput').value.trim().toLowerCase();
     
-    if (query === '') {
+    if (!query) {
         displayGames(allGames);
         updateStats(allGames.length);
         return;
     }
     
-    const filtered = allGames.filter(game => 
+    const filtered = allGames.filter(game =>
         game.game_title.toLowerCase().includes(query) ||
         game.article_type.toLowerCase().includes(query) ||
         game.developer_info.toLowerCase().includes(query) ||
@@ -162,11 +159,7 @@ function clearFilter() {
 
 function updateStats(currentCount, totalCount = null) {
     const statsBar = document.getElementById('gameCount');
-    if (totalCount) {
-        statsBar.innerHTML = `Showing ${currentCount} of ${totalCount} articles`;
-    } else {
-        statsBar.innerHTML = `Showing ${currentCount} articles`;
-    }
+    statsBar.innerHTML = totalCount ? `Showing ${currentCount} of ${totalCount} articles` : `Showing ${currentCount} articles`;
 }
 
 function showLoading(message) {
@@ -196,16 +189,6 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
-// Enter key for search
-document.getElementById('gameNameInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        searchGame();
-    }
-});
-
-// Enter key for filter
-document.getElementById('searchInput').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        filterGames();
-    }
-});
+// Enter key triggers
+document.getElementById('gameNameInput').addEventListener('keypress', e => { if (e.key === 'Enter') searchGame(); });
+document.getElementById('searchInput').addEventListener('keypress', e => { if (e.key === 'Enter') filterGames(); });
