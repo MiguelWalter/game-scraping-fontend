@@ -1,12 +1,15 @@
 let allGames = [];
 
+// Your Vercel backend URL
+const backendUrl = "https://game-scraping-backend-kappa.vercel.app";
+
 // Load games on page load
 document.addEventListener('DOMContentLoaded', function() {
     loadGames();
 });
 
 function loadGames() {
-    fetch('/api/games')
+    fetch(`${backendUrl}/api/games`)
         .then(response => response.json())
         .then(games => {
             allGames = games;
@@ -28,7 +31,7 @@ function searchGame() {
     
     showLoading(`🔍 Searching GamesRadar for "${gameName}"...`);
     
-    fetch('/api/search-game', {
+    fetch(`${backendUrl}/api/search-game`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -49,7 +52,7 @@ function searchGame() {
 }
 
 function checkForResults() {
-    fetch('/api/games')
+    fetch(`${backendUrl}/api/games`)
         .then(response => response.json())
         .then(games => {
             allGames = games;
@@ -62,6 +65,8 @@ function checkForResults() {
             }
         });
 }
+
+// ... rest of your code stays the same ...
 
 function displayGames(games) {
     const container = document.getElementById('gamesContainer');
@@ -206,4 +211,5 @@ document.getElementById('searchInput').addEventListener('keypress', function(e) 
     if (e.key === 'Enter') {
         filterGames();
     }
+
 });
