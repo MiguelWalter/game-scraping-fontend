@@ -5,12 +5,36 @@ const backendUrl = "https://game-scraping-backend-fm64.vercel.app";
 
 // Load games on page load
 document.addEventListener('DOMContentLoaded', function() {
-    loadGames();
+    // Test backend connection first
+    testBackendConnection();
 });
+
+function testBackendConnection() {
+    console.log('Testing backend connection...');
+    
+    fetch(`${backendUrl}/`)
+        .then(response => {
+            if (response.ok) {
+                console.log('✅ Backend connection successful');
+                loadGames();
+            } else {
+                throw new Error(`Backend returned ${response.status}`);
+            }
+        })
+        .catch(error => {
+            console.error('❌ Backend connection failed:', error);
+            showError(`Cannot connect to backend. Make sure it's deployed correctly.`);
+        });
+}
 
 function loadGames() {
     fetch(`${backendUrl}/api/games`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(games => {
             allGames = games;
             displayGames(games);
@@ -18,7 +42,7 @@ function loadGames() {
         })
         .catch(error => {
             console.error('Failed to load games:', error);
-            alert('Failed to load games. Please check your backend.');
+            showError('Failed to load games. Please check your backend.');
         });
 }
 
@@ -39,37 +63,53 @@ function searchGame() {
         body: JSON.stringify({ game_name: gameName })
     })
     .then(response => {
-        if (response.status !== 202) throw new Error("Backend did not accept the search");
-        pollForResults();
+        if (response.status === 202) {
+            // Search started successfully
+            pollForResults();
+        } else {
+            return response.json().then(data => {
+                throw new Error(data.error || 'Search failed');
+            });
+        }
     })
     .catch(error => {
         console.error('Error starting search:', error);
         hideLoading();
-        alert('Failed to start search. Please try again.');
+        showError('Failed to start search: ' + error.message);
     });
 }
 
 // Poll backend /api/status until results exist
 function pollForResults(attempts = 0) {
+    const maxAttempts = 30; // Try for 30 seconds
+    
     fetch(`${backendUrl}/api/status`)
         .then(res => res.json())
         .then(status => {
-            if (status.games_count > 0 || attempts > 20) {
-                // Results ready or max attempts reached
-                checkForResults();
+            console.log('Status check:', status);
+            
+            if (status.games_count > 0) {
+                // Results ready
+                console.log('Results ready!');
+                fetchResults();
+            } else if (attempts >= maxAttempts) {
+                // Timeout
+                hideLoading();
+                showError('Search timed out. Please try again.');
             } else {
                 // Wait 1 second and try again
+                console.log(`Waiting for results... (${attempts + 1}/${maxAttempts})`);
                 setTimeout(() => pollForResults(attempts + 1), 1000);
             }
         })
         .catch(error => {
             console.error('Error polling backend:', error);
             hideLoading();
-            alert('Failed to get results from backend.');
+            showError('Failed to check search status.');
         });
 }
 
-function checkForResults() {
+function fetchResults() {
     fetch(`${backendUrl}/api/games`)
         .then(response => response.json())
         .then(games => {
@@ -80,15 +120,33 @@ function checkForResults() {
             
             if (games.length === 0) {
                 document.getElementById('noResults').style.display = 'block';
+            } else {
+                document.getElementById('noResults').style.display = 'none';
             }
         })
         .catch(error => {
             console.error('Error fetching results:', error);
             hideLoading();
-            alert('Failed to load search results.');
+            showError('Failed to load search results.');
         });
 }
 
+// Add this function to show errors
+function showError(message) {
+    const container = document.getElementById('gamesContainer');
+    container.innerHTML = `
+        <div style="text-align: center; padding: 2rem; background: #fee; border-radius: 8px;">
+            <p style="color: #c33;">❌ ${escapeHtml(message)}</p>
+            <button onclick="testBackendConnection()" style="margin-top: 1rem; padding: 0.5rem 1rem;">
+                Retry Connection
+            </button>
+        </div>
+    `;
+    container.style.display = 'block';
+    hideLoading();
+}
+
+// Rest of your functions remain the same...
 function displayGames(games) {
     const container = document.getElementById('gamesContainer');
     const noResults = document.getElementById('noResults');
@@ -168,7 +226,7 @@ function filterGames() {
     
     const filtered = allGames.filter(game => 
         game.game_title.toLowerCase().includes(query) ||
-        game.article_type.toLowerCase().includes(query) ||
+        (game.article_type && game.article_type.toLowerCase().includes(query)) ||
         game.developer_info.toLowerCase().includes(query) ||
         game.publisher_info.toLowerCase().includes(query)
     );
@@ -211,7 +269,7 @@ function hideLoading() {
 
 function escapeHtml(unsafe) {
     if (!unsafe) return '';
-    return unsafe
+    return String(unsafe)
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
