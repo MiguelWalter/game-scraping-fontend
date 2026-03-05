@@ -18,6 +18,7 @@ function loadGames() {
         })
         .catch(error => {
             console.error('Error loading games:', error);
+            alert('Failed to load games. Please check your backend.');
         });
 }
 
@@ -38,7 +39,10 @@ function searchGame() {
         },
         body: JSON.stringify({ game_name: gameName })
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) throw new Error("Backend response not OK");
+        return response.json();
+    })
     .then(data => {
         showLoading(`✅ Found results! Loading articles about "${gameName}"...`);
         // Check for new data after search
@@ -47,13 +51,16 @@ function searchGame() {
     .catch(error => {
         console.error('Error searching:', error);
         hideLoading();
-        alert('Failed to search. Please try again.');
+        alert('Failed to search. Please check your backend or try again.');
     });
 }
 
 function checkForResults() {
     fetch(`${backendUrl}/api/games`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error("Backend response not OK");
+            return response.json();
+        })
         .then(games => {
             allGames = games;
             displayGames(games);
@@ -63,10 +70,13 @@ function checkForResults() {
             if (games.length === 0) {
                 document.getElementById('noResults').style.display = 'block';
             }
+        })
+        .catch(error => {
+            console.error('Error fetching results:', error);
+            hideLoading();
+            alert('Failed to get results. Please check your backend.');
         });
 }
-
-// ... rest of your code stays the same ...
 
 function displayGames(games) {
     const container = document.getElementById('gamesContainer');
@@ -211,5 +221,4 @@ document.getElementById('searchInput').addEventListener('keypress', function(e) 
     if (e.key === 'Enter') {
         filterGames();
     }
-
 });
