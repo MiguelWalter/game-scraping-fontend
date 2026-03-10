@@ -1,104 +1,165 @@
-/* Add these new styles to your existing style.css */
-
-.scrape-random-btn {
-    background: linear-gradient(135deg, #9f7aea, #667eea);
-    color: white;
-    padding: 1rem 2.5rem;
-    border: none;
-    border-radius: 50px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 1.1rem;
-    white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(159, 122, 234, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.scrape-random-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(159, 122, 234, 0.5);
-    background: linear-gradient(135deg, #805ad5, #5a67d8);
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    color: #333;
 }
 
-.scrape-random-btn:active {
-    transform: translateY(0);
-}
-
-/* Make the button section look nice */
-.search-section {
+header {
     background: white;
     padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    margin-bottom: 2rem;
-    border: 1px solid rgba(159, 122, 234, 0.2);
-}
-
-.search-section h2 {
-    color: #1a1a2e;
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
     text-align: center;
+    border-bottom: 3px solid #e94560;
 }
 
-.game-search-container {
-    display: flex;
-    gap: 1rem;
-    max-width: 800px;
-    margin: 0 auto;
+header h1 {
+    color: #1a1a2e;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
 }
 
-#gameNameInput {
-    flex: 1;
-    padding: 1rem 1.5rem;
-    border: 2px solid #e0e0e0;
-    border-radius: 50px;
-    font-size: 1rem;
-    transition: all 0.3s;
-    background: #f8fafc;
+header p {
+    color: #666;
 }
 
-#gameNameInput:focus {
-    outline: none;
-    border-color: #9f7aea;
-    box-shadow: 0 0 0 3px rgba(159, 122, 234, 0.1);
-    background: white;
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
 }
 
-.search-game-btn {
-    background: linear-gradient(135deg, #48bb78, #38a169);
+.controls {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.scrape-btn {
+    background: linear-gradient(135deg, #e94560, #0f3460);
     color: white;
-    padding: 1rem 2rem;
+    padding: 1rem 3rem;
     border: none;
     border-radius: 50px;
+    font-size: 1.2rem;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.3s;
-    font-size: 1rem;
-    white-space: nowrap;
+    transition: transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
 }
 
-.search-game-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 15px rgba(72, 187, 120, 0.3);
+.scrape-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(233, 69, 96, 0.5);
 }
 
-/* Responsive design */
+.stats-bar {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: bold;
+    color: #e94560;
+}
+
+.loading {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 12px;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #e94560;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.game-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(233, 69, 96, 0.2);
+}
+
+.game-title {
+    color: #1a1a2e;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #e94560;
+}
+
+.game-info {
+    margin-bottom: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.game-info strong {
+    color: #0f3460;
+    display: inline-block;
+    min-width: 90px;
+}
+
+.game-info ul {
+    list-style: none;
+    margin-top: 0.3rem;
+}
+
+.game-info li {
+    background: #f8f9fa;
+    margin: 0.3rem 0;
+    padding: 0.5rem;
+    border-radius: 6px;
+    border-left: 3px solid #e94560;
+}
+
+.read-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #e94560;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.read-link:hover {
+    text-decoration: underline;
+}
+
+footer {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+    margin-top: 2rem;
+}
+
 @media (max-width: 768px) {
-    .game-search-container {
-        flex-direction: column;
-    }
-    
-    .search-game-btn {
-        width: 100%;
-    }
-    
-    .scrape-random-btn {
-        width: 100%;
-        max-width: 100%;
+    .games-grid {
+        grid-template-columns: 1fr;
     }
 }
