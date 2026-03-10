@@ -3,66 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamesRadar Random Article Scraper</title>
+    <title>GamesRadar Random Game Scraper</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <div class="header-content">
-            <h1>🎮 GamesRadar Random Article Scraper</h1>
-            <p>Get random game articles from GamesRadar homepage</p>
-        </div>
+        <h1>🎮 GamesRadar Random Game Scraper</h1>
+        <p>Get 10 random game articles directly from GamesRadar</p>
     </header>
 
     <div class="container">
-        <div class="search-section">
-            <h2>🔍 Get Random Game Articles</h2>
-            <div class="game-search-container">
-                <input type="text" 
-                       id="gameNameInput" 
-                       placeholder="Enter game name (optional) or just click scrape"
-                       value="Elden Ring">
-                <button onclick="searchGame()" class="search-game-btn">🔍 Search Specific Game</button>
-            </div>
-            
-            <!-- NEW: Scrape Random Button -->
-            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
-                <button onclick="scrapeRandom()" class="scrape-random-btn">
-                    🎲 Scrape 10 Random Articles from Homepage
-                </button>
-            </div>
-            
-            <p class="example-text">Click the random button to get articles directly from GamesRadar homepage!</p>
-        </div>
-
         <div class="controls">
-            <div class="filter-container">
-                <input type="text" id="searchInput" placeholder="Filter current results...">
-                <button onclick="filterArticles()">🔍 Filter</button>
-            </div>
-            <button onclick="clearFilter()" class="refresh-btn">🔄 Clear Filter</button>
+            <button onclick="scrapeRandomGames()" class="scrape-btn">
+                🎲 Get 10 Random Games from GamesRadar
+            </button>
         </div>
 
-        <div class="stats-bar" id="statsBar">
-            <span id="gameCount">Ready to scrape...</span>
+        <div class="stats-bar">
+            <span id="gameCount">Click the button to start</span>
         </div>
 
         <div id="loading" class="loading" style="display: none;">
             <div class="spinner"></div>
-            <p id="loadingMessage">Loading...</p>
+            <p>Scraping random games from GamesRadar...</p>
         </div>
 
         <div id="gamesContainer" class="games-grid"></div>
-
-        <div id="noResults" class="no-results" style="display: none;">
-            <p>No articles found</p>
-            <p class="hint">Click "Scrape Random Articles" to get started!</p>
-        </div>
     </div>
 
     <footer>
-        <p>© 2024 GamesRadar Random Article Scraper | Fetches real articles from GamesRadar</p>
-        <p class="disclaimer">This is a demonstration project - scrapes and displays random game articles</p>
+        <p>© 2024 GamesRadar Random Game Scraper</p>
     </footer>
 
     <script src="script.js"></script>
