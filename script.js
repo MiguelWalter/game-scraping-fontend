@@ -3,8 +3,8 @@ const backendUrl = "https://game-scraping-backend-omega.vercel.app";
 function scrapeFromUrl() {
     const url = document.getElementById('urlInput').value.trim();
     
-    if (!url.includes('gamesradar.com')) {
-        alert('Please enter a GamesRadar URL');
+    if (!url) {
+        alert('Please enter a URL');
         return;
     }
     
@@ -24,7 +24,7 @@ function scrapeFromUrl() {
                     if (status.games_count > 0) {
                         clearInterval(interval);
                         fetchGames();
-                    } else if (attempts > 20) {
+                    } else if (attempts > 15) {
                         clearInterval(interval);
                         hideLoading();
                         document.getElementById('noResults').style.display = 'block';
@@ -82,7 +82,7 @@ function displayGames(games) {
                 </div>
                 
                 <a href="${escapeHtml(game.article_url)}" target="_blank" class="read-link">
-                    📖 Read Full Article on GamesRadar →
+                    📖 Read Full Article →
                 </a>
             </div>
         `;
@@ -96,6 +96,7 @@ function showLoading(msg) {
     document.getElementById('loading').style.display = 'block';
     document.getElementById('loadingMessage').textContent = msg;
     document.getElementById('gamesContainer').style.display = 'none';
+    document.getElementById('noResults').style.display = 'none';
 }
 
 function hideLoading() {
