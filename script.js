@@ -1,20 +1,36 @@
 const backendUrl = "https://game-scraping-backend-omega.vercel.app";
 
-function scrapeRandomGames() {
-    showLoading();
+function scrapeFromUrl() {
+    const url = document.getElementById('urlInput').value.trim();
     
-    fetch(`${backendUrl}/api/scrape-random`, {
-        method: 'POST'
+    if (!url) {
+        alert('Please enter a GamesRadar URL');
+        return;
+    }
+    
+    if (!url.includes('gamesradar.com')) {
+        alert('Please enter a valid GamesRadar URL');
+        return;
+    }
+    
+    showLoading(`🔍 Scraping from: ${url}`);
+    
+    fetch(`${backendUrl}/api/scrape-url`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url })
     })
     .then(response => {
         if (response.status === 202) {
             pollForResults();
+        } else {
+            throw new Error('Failed to start scraping');
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Failed to start scraping');
         hideLoading();
+        alert('Failed to start scraping. Check console for details.');
     });
 }
 
@@ -24,11 +40,11 @@ function pollForResults(attempts = 0) {
         .then(status => {
             if (status.games_count > 0) {
                 fetchGames();
-            } else if (attempts < 20) {
+            } else if (attempts < 30) {
                 setTimeout(() => pollForResults(attempts + 1), 2000);
             } else {
                 hideLoading();
-                alert('Scraping timed out');
+                document.getElementById('noResults').style.display = 'block';
             }
         });
 }
@@ -38,13 +54,22 @@ function fetchGames() {
         .then(response => response.json())
         .then(games => {
             displayGames(games);
-            document.getElementById('gameCount').textContent = `Showing ${games.length} random games`;
+            document.getElementById('gameCount').textContent = `Found ${games.length} articles`;
             hideLoading();
         });
 }
 
 function displayGames(games) {
     const container = document.getElementById('gamesContainer');
+    const noResults = document.getElementById('noResults');
+    
+    if (games.length === 0) {
+        container.innerHTML = '';
+        noResults.style.display = 'block';
+        return;
+    }
+    
+    noResults.style.display = 'none';
     
     let html = '';
     games.forEach(game => {
@@ -85,9 +110,11 @@ function displayGames(games) {
     container.innerHTML = html;
 }
 
-function showLoading() {
+function showLoading(message) {
     document.getElementById('loading').style.display = 'block';
+    document.getElementById('loadingMessage').textContent = message;
     document.getElementById('gamesContainer').style.display = 'none';
+    document.getElementById('noResults').style.display = 'none';
 }
 
 function hideLoading() {
@@ -104,3 +131,10 @@ function escapeHtml(unsafe) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+
+// Enter key for URL input
+document.getElementById('urlInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        scrapeFromUrl();
+    }
+});
