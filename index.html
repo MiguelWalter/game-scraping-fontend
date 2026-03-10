@@ -3,36 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamesRadar Random Game Scraper</title>
+    <title>GamesRadar URL Scraper</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>🎮 GamesRadar Random Game Scraper</h1>
-        <p>Get 10 random game articles directly from GamesRadar</p>
+        <h1>🎮 GamesRadar URL Scraper</h1>
+        <p>Paste any GamesRadar link to get 10 random game articles</p>
     </header>
 
     <div class="container">
-        <div class="controls">
-            <button onclick="scrapeRandomGames()" class="scrape-btn">
-                🎲 Get 10 Random Games from GamesRadar
-            </button>
+        <div class="url-input-section">
+            <h2>🔗 Enter GamesRadar URL</h2>
+            <div class="input-group">
+                <input 
+                    type="url" 
+                    id="urlInput" 
+                    placeholder="https://www.gamesradar.com/uk/"
+                    value="https://www.gamesradar.com/uk/"
+                >
+                <button onclick="scrapeFromUrl()" class="scrape-btn">
+                    🎲 Get 10 Random Articles
+                </button>
+            </div>
+            <p class="example">Example: https://www.gamesradar.com/uk/ or https://www.gamesradar.com/news/</p>
         </div>
 
         <div class="stats-bar">
-            <span id="gameCount">Click the button to start</span>
+            <span id="gameCount">Enter a URL and click the button</span>
         </div>
 
         <div id="loading" class="loading" style="display: none;">
             <div class="spinner"></div>
-            <p>Scraping random games from GamesRadar...</p>
+            <p id="loadingMessage">Scraping articles from GamesRadar...</p>
         </div>
 
         <div id="gamesContainer" class="games-grid"></div>
+
+        <div id="noResults" class="no-results" style="display: none;">
+            <p>No articles found on this page</p>
+            <p class="hint">Try a different GamesRadar URL</p>
+        </div>
     </div>
 
     <footer>
-        <p>© 2024 GamesRadar Random Game Scraper</p>
+        <p>© 2024 GamesRadar URL Scraper | Paste any GamesRadar link</p>
     </footer>
 
     <script src="script.js"></script>
