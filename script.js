@@ -1,5 +1,5 @@
 // IMPORTANT: Use your actual Vercel backend URL
-const backendUrl = "https://game-scraping-backend-omega.vercel.app/";
+const backendUrl = "https://game-scraping-backend-omega.vercel.app";
 
 console.log("Script loaded. Backend URL:", backendUrl);
 
@@ -208,4 +208,5 @@ document.getElementById('urlInput').addEventListener('keypress', function(e) {
         scrapeFromUrl();
     }
 });
+
 
