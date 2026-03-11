@@ -1,19 +1,6 @@
 const backendUrl = "https://game-scraping-backend-omega.vercel.app";
 
-document.addEventListener('DOMContentLoaded', function() {
-    testConnection();
-});
-
-function testConnection() {
-    fetch(`${backendUrl}/`)
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('gameCount').textContent = '✅ Connected';
-        })
-        .catch(() => {
-            document.getElementById('gameCount').textContent = '❌ Connection failed';
-        });
-}
+let scrapingAttempts = 0;
 
 function scrapeFromUrl() {
     const url = document.getElementById('urlInput').value.trim();
@@ -23,7 +10,8 @@ function scrapeFromUrl() {
         return;
     }
     
-    showLoading();
+    showLoading('🔍 Scraping articles...');
+    scrapingAttempts = 0;
     
     fetch(`${backendUrl}/api/scrape-url`, {
         method: 'POST',
@@ -31,23 +19,30 @@ function scrapeFromUrl() {
         body: JSON.stringify({ url: url })
     })
     .then(() => {
-        let attempts = 0;
-        const interval = setInterval(() => {
-            fetch(`${backendUrl}/api/status`)
-                .then(res => res.json())
-                .then(status => {
-                    if (status.games_count > 0) {
-                        clearInterval(interval);
-                        fetchGames();
-                    } else if (attempts > 20) {
-                        clearInterval(interval);
-                        hideLoading();
-                        document.getElementById('noResults').style.display = 'block';
-                    }
-                    attempts++;
-                });
-        }, 1500);
+        checkResults();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        hideLoading();
+        alert('Failed to start scraping');
     });
+}
+
+function checkResults() {
+    scrapingAttempts++;
+    
+    fetch(`${backendUrl}/api/status`)
+        .then(res => res.json())
+        .then(status => {
+            if (status.games_count > 0) {
+                fetchGames();
+            } else if (scrapingAttempts < 15) {
+                setTimeout(checkResults, 2000);
+            } else {
+                hideLoading();
+                document.getElementById('noResults').style.display = 'block';
+            }
+        });
 }
 
 function fetchGames() {
@@ -56,13 +51,14 @@ function fetchGames() {
         .then(games => {
             displayGames(games);
             hideLoading();
+            document.getElementById('noResults').style.display = 'none';
         });
 }
 
 function displayGames(games) {
     const container = document.getElementById('gamesContainer');
     
-    if (games.length === 0) {
+    if (!games || games.length === 0) {
         document.getElementById('noResults').style.display = 'block';
         return;
     }
@@ -76,19 +72,27 @@ function displayGames(games) {
                 <p><strong>Platforms:</strong> ${game.platform_availability.join(', ')}</p>
                 <p><strong>Developer:</strong> ${escapeHtml(game.developer_info)}</p>
                 <p><strong>Publisher:</strong> ${escapeHtml(game.publisher_info)}</p>
-                <p><strong>Features:</strong> ${game.key_features[0]}</p>
-                <a href="${escapeHtml(game.article_url)}" target="_blank">Read Article →</a>
+                <div class="features">
+                    <strong>Features:</strong>
+                    <ul>
+                        ${game.key_features.map(f => `<li>${escapeHtml(f)}</li>`).join('')}
+                    </ul>
+                </div>
+                <a href="${escapeHtml(game.article_url)}" target="_blank" class="read-link">
+                    Read Full Article →
+                </a>
             </div>
         `;
     });
     
     container.innerHTML = html;
-    document.getElementById('noResults').style.display = 'none';
 }
 
-function showLoading() {
+function showLoading(msg) {
     document.getElementById('loading').style.display = 'block';
+    document.getElementById('loadingMessage').textContent = msg;
     document.getElementById('gamesContainer').style.display = 'none';
+    document.getElementById('noResults').style.display = 'none';
 }
 
 function hideLoading() {
