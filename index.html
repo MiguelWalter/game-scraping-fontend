@@ -3,51 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GamesRadar URL Scraper</title>
+    <title>GamesRadar Game Scraper</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>🎮 GamesRadar URL Scraper</h1>
-        <p>Paste any GamesRadar link to get 10 random game articles</p>
+        <h1>🎮 GamesRadar Game Scraper</h1>
+        <p>Enter any GamesRadar URL to scrape at least 10 games</p>
     </header>
 
     <div class="container">
-        <div class="url-input-section">
-            <h2>🔗 Enter GamesRadar URL</h2>
-            <div class="input-group">
-                <input 
-                    type="url" 
-                    id="urlInput" 
-                    placeholder="https://www.gamesradar.com/uk/"
-                    value="https://www.gamesradar.com/uk/"
-                >
-                <button onclick="scrapeFromUrl()" class="scrape-btn">
-                    🎲 Get 10 Random Articles
-                </button>
-            </div>
-            <p class="example">Example: https://www.gamesradar.com/uk/ or https://www.gamesradar.com/news/</p>
+        <div class="url-section">
+            <input type="url" id="urlInput" placeholder="https://www.gamesradar.com/" value="https://www.gamesradar.com/">
+            <button id="scrapeBtn">🎲 Scrape Games</button>
         </div>
 
-        <div class="stats-bar">
-            <span id="gameCount">Enter a URL and click the button</span>
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search by title, developer, publisher...">
+            <button id="searchBtn">🔍 Filter</button>
+            <button id="clearBtn" class="secondary">🔄 Clear</button>
         </div>
 
-        <div id="loading" class="loading" style="display: none;">
-            <div class="spinner"></div>
-            <p id="loadingMessage">Scraping articles from GamesRadar...</p>
-        </div>
+        <div id="loading" class="loading" style="display: none;">Scraping in progress...</div>
+        <div id="error" class="error" style="display: none;"></div>
 
         <div id="gamesContainer" class="games-grid"></div>
-
-        <div id="noResults" class="no-results" style="display: none;">
-            <p>No articles found on this page</p>
-            <p class="hint">Try a different GamesRadar URL</p>
-        </div>
+        <div id="noResults" class="no-results" style="display: none;">No games found</div>
     </div>
 
     <footer>
-        <p>© 2024 GamesRadar URL Scraper | Paste any GamesRadar link</p>
+        <p>© 2024 GamesRadar Scraper – Data from real articles</p>
     </footer>
 
     <script src="script.js"></script>
